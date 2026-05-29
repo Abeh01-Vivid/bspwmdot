@@ -1,0 +1,68 @@
+#!/bin/sh
+# ╔══════════════════════════════════════════╗
+# ║  bspwmrc — Catppuccin Mocha / Abe       ║
+# ╚══════════════════════════════════════════╝
+
+# ── Autostart ────────────────────────────────────────────────────────────────
+pgrep -x sxhkd > /dev/null || sxhkd &
+pgrep -x picom > /dev/null || picom --daemon &
+
+# Status bar (dwm-style via lemonbar — see bar.sh)
+~/.config/bspwm/bar.sh &
+
+# Wallpaper (adjust path as needed)
+# feh --bg-scale ~/.config/wallpapers/wall.jpg &
+
+# ── Monitors / Desktops ──────────────────────────────────────────────────────
+# Kanji workspace labels — matching your dwm aesthetic
+bspc monitor -d 一 二 三 四 五 六 七 八 九
+
+# ── Global Settings ──────────────────────────────────────────────────────────
+bspc config split_ratio          0.55
+bspc config border_width         2
+bspc config window_gap           8
+
+# Padding (outer gap around the screen edge — mirrors vanitygaps outer gap)
+bspc config top_padding          8
+bspc config bottom_padding       38   # leave room for the bottom bar
+bspc config left_padding         8
+bspc config right_padding        8
+
+bspc config focus_follows_pointer true
+bspc config pointer_follows_focus false
+bspc config click_to_focus        button1
+bspc config pointer_modifier      mod4   # super for mouse drag/resize
+bspc config pointer_action1       move
+bspc config pointer_action2       resize_side
+bspc config pointer_action3       resize_corner
+
+# ── Colours (Catppuccin Mocha) ───────────────────────────────────────────────
+# normal border
+bspc config normal_border_color   "#45475a"
+# focused border
+bspc config focused_border_color  "#cba6f7"
+# urgent border
+bspc config urgent_border_color   "#f38ba8"
+# presel feedback
+bspc config presel_feedback_color "#89b4fa"
+
+# ── Window Rules ─────────────────────────────────────────────────────────────
+# Floating by window type
+bspc rule -a "*:*:Open Files"   state=floating
+bspc rule -a "*:*:Save As*"     state=floating
+bspc rule -a "Gimp*"            desktop='^5' follow=on state=floating
+bspc rule -a "firefox"          desktop='^2' follow=on
+bspc rule -a "Alacritty"        state=tiled
+
+# Dialogs / popups float automatically — handled by ewmh hints
+bspc rule -a "dialog"           state=floating
+bspc rule -a "splash"           state=floating
+bspc rule -a "toolbar"          state=floating
+bspc rule -a "utility"          state=floating
+
+# Scratchpad (launch with: bspc rule -a Alacritty:scratchpad state=floating; alacritty --class Alacritty,scratchpad)
+bspc rule -a "Alacritty:scratchpad" state=floating rectangle=1200x600+360+200 sticky=on
+
+# ── Layouts per desktop (optional defaults) ───────────────────────────────────
+# All start tiled; you can set monocle on specific desktops:
+# bspc desktop '^3' -l monocle
